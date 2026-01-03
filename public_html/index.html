@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM J // TERMINAL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+    <div id="crt-overlay"></div>
+    <div id="crt-flicker"></div>
+
+    <div id="tui-container">
+        <div id="menu-bar" class="interface-element">
+            <span class="menu-item">File</span> <span class="menu-item">View</span> <span class="menu-item" style="margin-left: auto;">Help[F1]</span>
+        </div>
+
+        <div id="main-stage">
+            <div id="nav-pane" class="booting interface-element">
+                <div class="pane-header">Navigator [~J]</div>
+                <ul class="nav-list" id="nav-list">
+                    <!-- Navigation items will be injected here by app.js -->
+                </ul>
+            </div>
+
+            <div id="content-pane" class="boot-mode">
+                <div id="boot-terminal"></div>
+                <div id="blog-content">
+                    <!-- Content will be injected here by app.js -->
+                </div>
+            </div>
+        </div>
+
+        <div id="status-bar" class="interface-element">
+            <span id="status-text">BOOTING...</span> <span id="clock"></span>
+        </div>
+    </div>
+
+    <script src="js/parser.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

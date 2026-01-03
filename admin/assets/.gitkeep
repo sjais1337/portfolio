@@ -1,0 +1,6 @@
+# Admin Assets
+
+Place images, PDFs, and other assets here.
+They will be synced to `public_html/assets/uploads/` on the server.
+
+Supported binary formats: .png, .jpg, .jpeg, .gif, .webp, .ico, .pdf, .zip, .woff, .woff2, .ttf, .eot
