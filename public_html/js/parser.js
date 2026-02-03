@@ -148,9 +148,10 @@ const Parser = {
         // ============================================
 
         // Links - Smart handling for internal .md files vs external links
-        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+        // Uses a more robust regex that handles nested brackets in link text (e.g., "[YT] Title")
+        html = html.replace(/\[([^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*)\]\(([^)]+)\)/g, (match, text, url) => {
             if (url.endsWith('.md')) {
-                return `<a href="#" onclick="App.loadContent('${url}'); return false;">${text}</a>`;
+                return `<a href="#${url}" onclick="App.loadContent('${url}'); return false;">${text}</a>`;
             } else {
                 return `<a href="${url}" target="_blank" rel="noopener">${text}</a>`;
             }

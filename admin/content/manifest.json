@@ -1,7 +1,43 @@
 {
-    "files": [
-        { "id": "intro", "title": "System J: Operational Doctrine", "path": "pages/intro.md", "type": "file" },
-        { "id": "resume", "title": "Resume", "path": "resume.md", "type": "file" },
-        { "id": "philosophy", "title": "Philosophy", "path": "blog/philosophy.md", "type": "file" }
+    "folders": [
+        {
+            "name": "blog",
+            "displayName": "Blog",
+            "files": [
+                {
+                    "id": "blog-concurrency_guide",
+                    "title": "Concurrency and Parallelism",
+                    "path": "blog/concurrency_guide.md"
+                },
+                {
+                    "id": "blog-philosophy",
+                    "title": "Philosophy",
+                    "path": "blog/philosophy.md"
+                }
+            ]
+        },
+        {
+            "name": "pages",
+            "displayName": "Pages",
+            "files": [
+                {
+                    "id": "pages-intro",
+                    "title": "System J: Operational Doctrine",
+                    "path": "pages/intro.md"
+                }
+            ]
+        }
+    ],
+    "rootFiles": [
+        {
+            "id": "index",
+            "title": "Welcome to System J",
+            "path": "index.md"
+        },
+        {
+            "id": "resume",
+            "title": "Resume",
+            "path": "resume.md"
+        }
     ]
 }

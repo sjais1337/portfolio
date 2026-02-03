@@ -16,15 +16,79 @@
 
     <div id="tui-container">
         <div id="menu-bar" class="interface-element">
-            <span class="menu-item">File</span> <span class="menu-item">View</span> <span class="menu-item" style="margin-left: auto;">Help[F1]</span>
+            <span class="menu-item">File</span>
+            <span class="menu-item" id="view-toggle">View</span>
+            <span class="menu-item menu-item-themes" id="themes-toggle">◈ Themes</span>
+            <span class="menu-item" id="reading-mode-toggle">◧ Focus</span>
+            <span class="menu-item" style="margin-left: auto;">Help[F1]</span>
+        </div>
+
+        <!-- Theme Customization Panel -->
+        <div id="theme-panel" class="theme-panel hidden">
+            <div class="theme-panel-header">[ DISPLAY SETTINGS ]</div>
+            
+            <div class="theme-section">
+                <div class="theme-section-title">PRESETS</div>
+                <div class="theme-presets">
+                    <button class="theme-preset-btn" data-theme="matrix">Matrix</button>
+                    <button class="theme-preset-btn" data-theme="classic">Classic</button>
+                    <button class="theme-preset-btn" data-theme="powershell">PowerShell</button>
+                    <button class="theme-preset-btn" data-theme="sakura">Sakura</button>
+                    <button class="theme-preset-btn" data-theme="hotpink">Hot Pink</button>
+                    <button class="theme-preset-btn" data-theme="doom">Doom</button>
+                </div>
+            </div>
+
+            <div class="theme-section">
+                <div class="theme-section-title">CUSTOM COLORS</div>
+                <div class="theme-color-row">
+                    <label>Accent</label>
+                    <input type="color" id="color-accent" value="#00ee00">
+                </div>
+                <div class="theme-color-row">
+                    <label>Background</label>
+                    <input type="color" id="color-bg" value="#000000">
+                </div>
+                <div class="theme-color-row">
+                    <label>Text</label>
+                    <input type="color" id="color-text" value="#ffffff">
+                </div>
+            </div>
+
+            <div class="theme-section">
+                <div class="theme-section-title">EFFECTS</div>
+                <div class="theme-toggle-row">
+                    <label>CRT Scanlines</label>
+                    <button class="toggle-btn active" id="toggle-crt">ON</button>
+                </div>
+                <div class="theme-toggle-row">
+                    <label>CRT Flicker</label>
+                    <button class="toggle-btn active" id="toggle-flicker">ON</button>
+                </div>
+            </div>
+
+            <div class="theme-section">
+                <div class="theme-section-title">FONT SIZE</div>
+                <div class="theme-slider-row">
+                    <input type="range" id="font-size-slider" min="12" max="20" value="14">
+                    <span id="font-size-value">14px</span>
+                </div>
+            </div>
         </div>
 
         <div id="main-stage">
             <div id="nav-pane" class="booting interface-element">
-                <div class="pane-header">Navigator [~J]</div>
-                <ul class="nav-list" id="nav-list">
-                    <!-- Navigation items will be injected here by app.js -->
-                </ul>
+                <div class="nav-files-section">
+                    <div class="pane-header">Navigator [~J]</div>
+                    <ul class="nav-list" id="nav-list">
+                        <!-- Navigation items will be injected here by app.js -->
+                    </ul>
+                </div>
+                <!-- Table of Contents section -->
+                <div id="toc-section" class="toc-section hidden">
+                    <div class="pane-header">Contents</div>
+                    <ul class="toc-list" id="toc-list"></ul>
+                </div>
             </div>
 
             <div id="content-pane" class="boot-mode">
@@ -36,11 +100,18 @@
         </div>
 
         <div id="status-bar" class="interface-element">
-            <span id="status-text">BOOTING...</span> <span id="clock"></span>
+            <span id="breadcrumb">~/</span>
+            <span id="system-stats">CPU: --°C | MEM: --% | UP: --</span>
+            <span id="status-text">BOOTING...</span>
+            <span id="clock"></span>
         </div>
+
+        <!-- Watermark logo in bottom-right corner -->
+        <div id="logo-watermark" class="interface-element"></div>
     </div>
 
     <script src="js/parser.js"></script>
+    <script src="js/themes.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

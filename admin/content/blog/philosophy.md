@@ -6,7 +6,7 @@ Date: 2025-11-21
 We believe in raw data. We believe in the command line. We believe in green text on black backgrounds.
 
 The medium is the message.
-In this blog, we will be starting from absolutely nothing, and end up writing the base code of some of the most notorious malware of the 90s. We will first learn about how your programs actually exist in memory, how they run, learn about assembly, and finally come to the topic of the blog, Polymorphic Engines. 
+In this blog, we will be starting from absolutely nothing, and end up writing the base code of some of the most notorious malware of the 90s. We will fuck ourselves learn about how your programs actually exist in memory, how they run, learn about assembly, and finally come to the topic of the blog, Polymorphic Engines. 
 
 When talking about a **program**, we must be precise about what we mean by it. A program, in formal terms is a set of machine instructions, stored in a file format such as ELF in linux (Executable and Linkable Format) or PE in windows, that exists on the _disk_. The instructions present in such files are not C/C++ or Python code, rather, they are present as machine code. To convert your instructions in C/C++ to machine code, you must _compile_ your code into a program. In particular, the `gcc` or any compiler for that matter, will output a ELF/PE file. 
 

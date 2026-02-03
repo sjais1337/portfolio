@@ -19,6 +19,144 @@ const ARGS = {
     dryRun: process.argv.includes('--dry-run')         // Show what would happen without doing it
 };
 
+// ============================================
+// MANIFEST GENERATION
+// ============================================
+
+/**
+ * Extracts the first H1 heading (# Title) from a markdown file.
+ * Returns null if no H1 is found.
+ */
+function extractH1Title(filePath) {
+    const content = fs.readFileSync(filePath, 'utf8');
+    const match = content.match(/^# (.+)$/m);
+    return match ? match[1].trim() : null;
+}
+
+/**
+ * Converts a snake_case folder name to Title Case with spaces.
+ * e.g., "my_cool_folder" -> "My Cool Folder"
+ */
+function folderNameToDisplayName(folderName) {
+    return folderName
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+/**
+ * Generates a unique ID from a file path.
+ * e.g., "blog/my_post.md" -> "blog-my_post"
+ */
+function generateFileId(relativePath) {
+    return relativePath
+        .replace(/\.md$/, '')
+        .replace(/\//g, '-')
+        .replace(/[^a-zA-Z0-9_-]/g, '_');
+}
+
+/**
+ * Scans the content directory and builds the manifest structure.
+ * Returns { success: boolean, manifest: object, errors: string[] }
+ */
+function generateManifest() {
+    const errors = [];
+    const folders = {};
+    const rootFiles = [];
+
+    // Recursively scan content directory
+    function scanDirectory(dirPath, relativeTo = CONFIG.contentDir) {
+        const items = fs.readdirSync(dirPath);
+
+        for (const item of items) {
+            if (item.startsWith('.') || item === 'manifest.json') continue;
+
+            const fullPath = path.join(dirPath, item);
+            const relativePath = path.relative(relativeTo, fullPath).replace(/\\/g, '/');
+            const stat = fs.statSync(fullPath);
+
+            if (stat.isDirectory()) {
+                // Initialize folder entry
+                const folderName = item;
+                const displayName = folderNameToDisplayName(folderName);
+                
+                if (!folders[folderName]) {
+                    folders[folderName] = {
+                        name: folderName,
+                        displayName: displayName,
+                        files: []
+                    };
+                }
+
+                // Scan contents of this folder
+                const folderItems = fs.readdirSync(fullPath);
+                for (const subItem of folderItems) {
+                    if (subItem.startsWith('.')) continue;
+                    
+                    const subFullPath = path.join(fullPath, subItem);
+                    const subRelativePath = path.relative(relativeTo, subFullPath).replace(/\\/g, '/');
+                    const subStat = fs.statSync(subFullPath);
+
+                    if (subStat.isFile() && subItem.endsWith('.md')) {
+                        const title = extractH1Title(subFullPath);
+                        
+                        if (!title) {
+                            errors.push(`Missing H1 title in: ${subRelativePath}`);
+                            continue;
+                        }
+
+                        folders[folderName].files.push({
+                            id: generateFileId(subRelativePath),
+                            title: title,
+                            path: subRelativePath
+                        });
+                    }
+                }
+            } else if (stat.isFile() && item.endsWith('.md')) {
+                // Root-level markdown file
+                const title = extractH1Title(fullPath);
+                
+                if (!title) {
+                    errors.push(`Missing H1 title in: ${relativePath}`);
+                    continue;
+                }
+
+                rootFiles.push({
+                    id: generateFileId(relativePath),
+                    title: title,
+                    path: relativePath
+                });
+            }
+        }
+    }
+
+    scanDirectory(CONFIG.contentDir);
+
+    // Check for ID conflicts
+    const allIds = new Set();
+    const allFiles = [...rootFiles];
+    Object.values(folders).forEach(f => allFiles.push(...f.files));
+
+    for (const file of allFiles) {
+        if (allIds.has(file.id)) {
+            errors.push(`Duplicate file ID detected: "${file.id}" (from ${file.path})`);
+        }
+        allIds.add(file.id);
+    }
+
+    // Build manifest structure
+    const manifest = {
+        folders: Object.values(folders).filter(f => f.files.length > 0),
+        rootFiles: rootFiles
+    };
+
+    return {
+        success: errors.length === 0,
+        manifest: manifest,
+        errors: errors
+    };
+}
+
 // Crypto Utilities
 function signData(data, privateKey) {
     const sign = crypto.createSign('SHA256');
@@ -249,6 +387,38 @@ async function main() {
     if (!fs.existsSync(CONFIG.assetsDir)) {
         fs.mkdirSync(CONFIG.assetsDir, { recursive: true });
     }
+
+    // ============================================
+    // STEP 1: Generate manifest from directory
+    // ============================================
+    console.log('[MANIFEST] Scanning content directory...');
+    const manifestResult = generateManifest();
+
+    if (!manifestResult.success) {
+        console.error('\n[FATAL] Manifest generation failed with errors:');
+        manifestResult.errors.forEach(err => console.error(`  ✗ ${err}`));
+        console.error('\nPlease fix the above issues and try again.');
+        console.error('Every .md file MUST have an H1 heading (# Title) as the first heading.\n');
+        process.exit(1);
+    }
+
+    // Write manifest.json
+    const manifestPath = path.join(CONFIG.contentDir, 'manifest.json');
+    const manifestJson = JSON.stringify(manifestResult.manifest, null, 4);
+    
+    if (!ARGS.dryRun) {
+        fs.writeFileSync(manifestPath, manifestJson);
+        console.log('[MANIFEST] Generated manifest.json successfully');
+    } else {
+        console.log('[MANIFEST] Would generate manifest.json (dry run)');
+    }
+
+    console.log(`  - Folders: ${manifestResult.manifest.folders.length}`);
+    console.log(`  - Root files: ${manifestResult.manifest.rootFiles.length}`);
+    manifestResult.manifest.folders.forEach(f => {
+        console.log(`    └─ ${f.displayName}: ${f.files.length} file(s)`);
+    });
+    console.log('');
 
     // Fetch remote metadata
     const remoteMetadata = await fetchRemoteMetadata(privateKey);
