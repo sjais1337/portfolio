@@ -60,7 +60,8 @@ const ThemeManager = {
         },
         crtEnabled: true,
         flickerEnabled: true,
-        fontSize: 14
+        fontSize: 14,
+        fontFamily: "'Fira Code', monospace"
     },
 
     // DOM elements (populated on init)
@@ -84,7 +85,9 @@ const ThemeManager = {
         this.elements = {
             panel: document.getElementById('theme-panel'),
             toggle: document.getElementById('themes-toggle'),
+            closeBtn: document.getElementById('theme-panel-close'),
             presetBtns: document.querySelectorAll('.theme-preset-btn'),
+            fontBtns: document.querySelectorAll('.font-btn'),
             colorAccent: document.getElementById('color-accent'),
             colorBg: document.getElementById('color-bg'),
             colorText: document.getElementById('color-text'),
@@ -107,6 +110,14 @@ const ThemeManager = {
             this.togglePanel();
         });
 
+        // Close button
+        if (this.elements.closeBtn) {
+            this.elements.closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.closePanel();
+            });
+        }
+
         // Close panel when clicking outside
         document.addEventListener('click', (e) => {
             if (!this.elements.panel.contains(e.target) && 
@@ -120,6 +131,14 @@ const ThemeManager = {
             btn.addEventListener('click', () => {
                 const theme = btn.dataset.theme;
                 this.applyPreset(theme);
+            });
+        });
+
+        // Font buttons
+        this.elements.fontBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const font = btn.dataset.font;
+                this.setFont(font);
             });
         });
 
@@ -225,6 +244,9 @@ const ThemeManager = {
         
         // Apply font size
         root.style.setProperty('--font-size-base', `${this.state.fontSize}px`);
+        
+        // Apply font family
+        root.style.setProperty('--font-family', this.state.fontFamily);
     },
 
     /**
@@ -233,6 +255,16 @@ const ThemeManager = {
     setFontSize(size) {
         this.state.fontSize = Math.max(10, Math.min(24, size)); // Clamp 10-24
         document.documentElement.style.setProperty('--font-size-base', `${this.state.fontSize}px`);
+        this.updateUI();
+        this.saveToStorage();
+    },
+
+    /**
+     * Set font family
+     */
+    setFont(fontFamily) {
+        this.state.fontFamily = fontFamily;
+        document.documentElement.style.setProperty('--font-family', fontFamily);
         this.updateUI();
         this.saveToStorage();
     },
@@ -266,6 +298,11 @@ const ThemeManager = {
             btn.classList.toggle('active', btn.dataset.theme === this.state.currentPreset);
         });
 
+        // Update font buttons
+        this.elements.fontBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.font === this.state.fontFamily);
+        });
+
         // Update color inputs
         this.elements.colorAccent.value = this.state.customColors.accent;
         this.elements.colorBg.value = this.state.customColors.bg;
@@ -296,7 +333,8 @@ const ThemeManager = {
             colors: this.state.customColors,
             crt: this.state.crtEnabled,
             flicker: this.state.flickerEnabled,
-            fontSize: this.state.fontSize
+            fontSize: this.state.fontSize,
+            fontFamily: this.state.fontFamily
         };
         localStorage.setItem('systemj-theme', JSON.stringify(data));
     },
@@ -313,6 +351,7 @@ const ThemeManager = {
                 this.state.crtEnabled = data.crt !== false;
                 this.state.flickerEnabled = data.flicker !== false;
                 this.state.fontSize = data.fontSize || 14;
+                this.state.fontFamily = data.fontFamily || "'Fira Code', monospace";
             }
         } catch (e) {
             console.warn('Failed to load theme from storage:', e);

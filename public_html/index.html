@@ -6,7 +6,7 @@
     <title>SYSTEM J // TERMINAL</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Source+Code+Pro:wght@400;700&family=IBM+Plex+Mono:wght@400;700&family=Space+Mono:wght@400;700&family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
@@ -16,16 +16,15 @@
 
     <div id="tui-container">
         <div id="menu-bar" class="interface-element">
-            <span class="menu-item">File</span>
-            <span class="menu-item" id="view-toggle">View</span>
+            <span class="menu-item" id="nav-toggle">☰ Nav</span>
+            <span class="menu-item" id="toc-toggle">≡ TOC</span>
             <span class="menu-item menu-item-themes" id="themes-toggle">◈ Themes</span>
             <span class="menu-item" id="reading-mode-toggle">◧ Focus</span>
-            <span class="menu-item" style="margin-left: auto;">Help[F1]</span>
         </div>
 
         <!-- Theme Customization Panel -->
         <div id="theme-panel" class="theme-panel hidden">
-            <div class="theme-panel-header">[ DISPLAY SETTINGS ]</div>
+            <div class="theme-panel-header">[ CUSTOMIZE ]<span class="theme-panel-close" id="theme-panel-close">✕</span></div>
             
             <div class="theme-section">
                 <div class="theme-section-title">PRESETS</div>
@@ -64,6 +63,19 @@
                 <div class="theme-toggle-row">
                     <label>CRT Flicker</label>
                     <button class="toggle-btn active" id="toggle-flicker">ON</button>
+                </div>
+            </div>
+
+            <div class="theme-section">
+                <div class="theme-section-title">FONT</div>
+                <div class="theme-font-grid">
+                    <button class="font-btn active" data-font="'Fira Code', monospace">Fira Code</button>
+                    <button class="font-btn" data-font="'JetBrains Mono', monospace">JetBrains</button>
+                    <button class="font-btn" data-font="'Source Code Pro', monospace">Source Code</button>
+                    <button class="font-btn" data-font="'IBM Plex Mono', monospace">IBM Plex</button>
+                    <button class="font-btn" data-font="'Space Mono', monospace">Space Mono</button>
+                    <button class="font-btn" data-font="'VT323', monospace">VT323</button>
+                    <button class="font-btn" data-font="'Press Start 2P', monospace">Pixel</button>
                 </div>
             </div>
 

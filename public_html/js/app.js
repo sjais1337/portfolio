@@ -20,7 +20,10 @@ const App = {
         tocSection: document.getElementById('toc-section'),
         tocList: document.getElementById('toc-list'),
         readingModeToggle: document.getElementById('reading-mode-toggle'),
-        mainStage: document.getElementById('main-stage')
+        navToggle: document.getElementById('nav-toggle'),
+        tocToggle: document.getElementById('toc-toggle'),
+        mainStage: document.getElementById('main-stage'),
+        tuiContainer: document.getElementById('tui-container')
     },
 
     state: {
@@ -28,7 +31,9 @@ const App = {
         currentPath: '/',
         currentFolder: null, // null = root, otherwise folder name
         manifest: null, // Cached manifest data
-        readingMode: false, // Reading mode toggle
+        focusMode: false, // Focus mode toggle
+        navVisible: true, // Navigation panel visibility
+        tocVisible: true, // Table of contents visibility
         bootTime: Date.now() // For uptime calculation
     },
 
@@ -82,7 +87,7 @@ const App = {
         this.startClock(); // Starts the clock on the bottom right
         this.loadManifest(); // Build up the index
         this.setupRouting(); // Enable hash-based URL routing for shareable links
-        this.setupReadingMode(); // Setup reading mode toggle
+        this.setupPanelToggles(); // Setup nav/toc/focus toggles
         this.startSystemStats(); // Start fake system stats
     },
 
@@ -405,7 +410,7 @@ const App = {
 
     /**
      * Generates and renders the table of contents from headings.
-     * Creates a proper hierarchical tree structure.
+     * Uses tree-style prefixes like the `tree` command.
      */
     renderTableOfContents() {
         if (!this.elements.tocSection || !this.elements.tocList) return;
@@ -417,38 +422,49 @@ const App = {
         }
 
         // Get all headings including H1
-        const headings = article.querySelectorAll('h1, h2, h3, h4');
+        const headings = Array.from(article.querySelectorAll('h1, h2, h3, h4'));
         if (headings.length < 2) {
             this.elements.tocSection.classList.add('hidden');
             return;
         }
 
         this.elements.tocList.innerHTML = '';
-        let tocIndex = 0;
         
-        // Track hierarchy for tree structure
-        let currentH1 = null;
-        let currentH2 = null;
-        let currentH3 = null;
+        // Build tree structure to determine which items are last at each level
+        const items = headings.map((h, i) => ({
+            heading: h,
+            level: parseInt(h.tagName.charAt(1)),
+            index: i
+        }));
 
-        headings.forEach((heading) => {
-            const id = `toc-target-${tocIndex++}`;
+        items.forEach((item, i) => {
+            const { heading, level } = item;
+            const id = `toc-target-${i}`;
             heading.id = id;
             
-            const level = parseInt(heading.tagName.charAt(1));
             const li = document.createElement('li');
             li.className = `toc-item toc-level-${level}`;
             
-            // Add tree branch character based on level
+            // Build tree prefix
             let prefix = '';
+            
             if (level === 1) {
-                prefix = '◆ ';
-            } else if (level === 2) {
-                prefix = '├─ ';
-            } else if (level === 3) {
-                prefix = '│  ├─ ';
-            } else if (level === 4) {
-                prefix = '│  │  ├─ ';
+                // H1: no prefix, it's a root
+                prefix = '';
+            } else {
+                // For each level, determine if we need │ or space
+                // and whether this is the last item at this level
+                const isLastAtLevel = this.isLastHeadingAtLevel(items, i, level);
+                
+                // Build the continuation lines for parent levels
+                for (let l = 2; l < level; l++) {
+                    // Check if there are more items at level l after this point
+                    const hasMoreAtParentLevel = this.hasMoreHeadingsAtLevel(items, i, l);
+                    prefix += hasMoreAtParentLevel ? '│  ' : '   ';
+                }
+                
+                // Add the branch for current level
+                prefix += isLastAtLevel ? '└─ ' : '├─ ';
             }
             
             li.innerHTML = `<span class="toc-prefix">${prefix}</span><span class="toc-text">${heading.textContent}</span>`;
@@ -462,43 +478,168 @@ const App = {
     },
 
     /**
-     * Setup reading mode toggle.
+     * Check if this is the last heading at the given level within its parent scope.
      */
-    setupReadingMode() {
-        if (this.elements.readingModeToggle) {
-            this.elements.readingModeToggle.onclick = () => this.toggleReadingMode();
+    isLastHeadingAtLevel(items, currentIndex, level) {
+        // Look ahead for more items at the same level before hitting a lower level number
+        for (let i = currentIndex + 1; i < items.length; i++) {
+            if (items[i].level < level) {
+                // Hit a parent level, so current was last in its section
+                return true;
+            }
+            if (items[i].level === level) {
+                // Found another at same level
+                return false;
+            }
+        }
+        // Reached end of list
+        return true;
+    },
+
+    /**
+     * Check if there are more headings at the given level after currentIndex.
+     */
+    hasMoreHeadingsAtLevel(items, currentIndex, level) {
+        for (let i = currentIndex + 1; i < items.length; i++) {
+            if (items[i].level < level) {
+                // Hit a parent, stop looking
+                return false;
+            }
+            if (items[i].level === level) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    /**
+     * Setup panel visibility toggles (Nav, TOC, Focus mode).
+     */
+    setupPanelToggles() {
+        // Nav toggle
+        if (this.elements.navToggle) {
+            this.elements.navToggle.onclick = () => this.toggleNav();
         }
         
-        // Load saved state
-        const saved = localStorage.getItem('systemj-reading-mode');
-        if (saved === 'true') {
-            this.state.readingMode = true;
-            this.elements.mainStage?.classList.add('reading-mode');
-            if (this.elements.readingModeToggle) {
-                this.elements.readingModeToggle.textContent = '◧ Focus ✓';
-            }
+        // TOC toggle
+        if (this.elements.tocToggle) {
+            this.elements.tocToggle.onclick = () => this.toggleToc();
+        }
+        
+        // Focus mode toggle
+        if (this.elements.readingModeToggle) {
+            this.elements.readingModeToggle.onclick = () => this.toggleFocusMode();
+        }
+        
+        // Load saved states
+        const savedNav = localStorage.getItem('systemj-nav-visible');
+        const savedToc = localStorage.getItem('systemj-toc-visible');
+        const savedFocus = localStorage.getItem('systemj-focus-mode');
+        
+        // Apply saved nav state
+        if (savedNav === 'false') {
+            this.state.navVisible = false;
+            this.elements.tuiContainer?.classList.add('nav-hidden');
+            this.updateToggleButton(this.elements.navToggle, '☰ Nav', false);
+        }
+        
+        // Apply saved toc state
+        if (savedToc === 'false') {
+            this.state.tocVisible = false;
+            this.elements.tuiContainer?.classList.add('toc-hidden');
+            this.updateToggleButton(this.elements.tocToggle, '≡ TOC', false);
+        }
+        
+        // Apply saved focus state
+        if (savedFocus === 'true') {
+            this.state.focusMode = true;
+            this.elements.tuiContainer?.classList.add('focus-mode');
+            this.updateToggleButton(this.elements.readingModeToggle, '◧ Focus', true);
         }
     },
 
     /**
-     * Toggle reading mode (hide nav, center content).
+     * Toggle navigation panel visibility.
      */
-    toggleReadingMode() {
-        this.state.readingMode = !this.state.readingMode;
-        
-        if (this.state.readingMode) {
-            this.elements.mainStage?.classList.add('reading-mode');
-            if (this.elements.readingModeToggle) {
-                this.elements.readingModeToggle.textContent = '◧ Focus ✓';
-            }
-        } else {
-            this.elements.mainStage?.classList.remove('reading-mode');
-            if (this.elements.readingModeToggle) {
-                this.elements.readingModeToggle.textContent = '◧ Focus';
-            }
+    toggleNav() {
+        // If focus mode is on, exit focus mode and show nav (don't toggle nav off)
+        if (this.state.focusMode) {
+            this.state.focusMode = false;
+            this.elements.tuiContainer?.classList.remove('focus-mode');
+            this.updateToggleButton(this.elements.readingModeToggle, '◧ Focus', false);
+            localStorage.setItem('systemj-focus-mode', false);
+            // Nav is already visible in focus mode state, just update UI
+            this.state.navVisible = true;
+            this.elements.tuiContainer?.classList.remove('nav-hidden');
+            this.updateToggleButton(this.elements.navToggle, '☰ Nav', true);
+            localStorage.setItem('systemj-nav-visible', true);
+            return;
         }
         
-        localStorage.setItem('systemj-reading-mode', this.state.readingMode);
+        this.state.navVisible = !this.state.navVisible;
+        
+        if (this.state.navVisible) {
+            this.elements.tuiContainer?.classList.remove('nav-hidden');
+        } else {
+            this.elements.tuiContainer?.classList.add('nav-hidden');
+        }
+        
+        this.updateToggleButton(this.elements.navToggle, '☰ Nav', this.state.navVisible);
+        localStorage.setItem('systemj-nav-visible', this.state.navVisible);
+    },
+
+    /**
+     * Toggle table of contents visibility.
+     */
+    toggleToc() {
+        this.state.tocVisible = !this.state.tocVisible;
+        
+        if (this.state.tocVisible) {
+            this.elements.tuiContainer?.classList.remove('toc-hidden');
+        } else {
+            this.elements.tuiContainer?.classList.add('toc-hidden');
+        }
+        
+        this.updateToggleButton(this.elements.tocToggle, '≡ TOC', this.state.tocVisible);
+        localStorage.setItem('systemj-toc-visible', this.state.tocVisible);
+    },
+
+    /**
+     * Toggle focus mode (hide nav, keep TOC, minimal status bar).
+     */
+    toggleFocusMode() {
+        this.state.focusMode = !this.state.focusMode;
+        
+        if (this.state.focusMode) {
+            this.elements.tuiContainer?.classList.add('focus-mode');
+            // Remove nav-hidden class if it was set independently
+            this.elements.tuiContainer?.classList.remove('nav-hidden');
+            this.state.navVisible = true;
+            this.updateToggleButton(this.elements.navToggle, '☰ Nav', true);
+            
+            // Auto-enable TOC when entering focus mode
+            if (!this.state.tocVisible) {
+                this.state.tocVisible = true;
+                this.elements.tuiContainer?.classList.remove('toc-hidden');
+                this.updateToggleButton(this.elements.tocToggle, '≡ TOC', true);
+                localStorage.setItem('systemj-toc-visible', true);
+            }
+        } else {
+            this.elements.tuiContainer?.classList.remove('focus-mode');
+            // The toc state remains as user set it
+        }
+        
+        this.updateToggleButton(this.elements.readingModeToggle, '◧ Focus', this.state.focusMode);
+        localStorage.setItem('systemj-focus-mode', this.state.focusMode);
+    },
+
+    /**
+     * Update toggle button text to show active state.
+     */
+    updateToggleButton(element, baseText, isActive) {
+        if (element) {
+            element.textContent = isActive ? `${baseText} ✓` : baseText;
+        }
     },
 
     /**

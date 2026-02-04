@@ -1,15 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const https = require('https');
 const http = require('http');
+const https = require('https');
 
 // Configuration
 const CONFIG = {
     contentDir: path.join(__dirname, 'content'),
     assetsDir: path.join(__dirname, 'assets'),
     privateKeyPath: path.join(__dirname, 'keys', 'private.pem'),
-    apiUrl: 'http://localhost:8080/api/gatekeeper.php'
+    apiUrl: 'https://sjais.in/api/gatekeeper.php'
 };
 
 // Command line arguments

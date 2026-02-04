@@ -13,6 +13,8 @@ The modern web obscures its machinery beneath layers of abstraction. We have tra
 
 ## Navigation
 
+See, usually I would not have told you to do it like this, but yeah it is how it is.
+
 Use the **file browser** on the left to explore:
 
 - **Blog** — Technical writings and guides
