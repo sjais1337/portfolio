@@ -8,5 +8,7 @@ The intent of this site is to publish all my writings, whether academic, philosp
 
 This site is written (read, vibecoded) primarily in plain HTML, CSS, JS and uses PHP for functionality. It doesn't require opening any FTP/SSH connection to publish articles and manages directories entirely on its own. The articles are stored in `.md` files, and are rendered using a built-in `.md` file parser. The goal with using `.md` files with a parser was to achieve simplicity, since most my writings are written in that format only.
 
+Moreover, the usage of a custom parser allows for adding customizeable items as and when needed, providing upgraded flexibility and modularity.
+
 There are a lot of personalization options present in the site, which you are free to choose to enhance your reading experience. Click on the **"THEMES"** menu item in the top navbar to explore your options. You can find the source code of this site in [my repository](https://github.com/sjais1337/portfolio).
 ---
