@@ -1,29 +1,29 @@
 {
     "folders": [
         {
-            "name": "blog",
-            "displayName": "Blog",
+            "name": "cryptology",
+            "displayName": "Cryptology",
             "files": [
                 {
-                    "id": "blog-concurrency_guide",
-                    "title": "Concurrency and Parallelism",
-                    "path": "blog/concurrency_guide.md"
-                },
-                {
-                    "id": "blog-philosophy",
-                    "title": "Philosophy",
-                    "path": "blog/philosophy.md"
+                    "id": "cryptology-historical_ciphers",
+                    "title": "Historical Ciphers",
+                    "path": "cryptology/historical_ciphers.md"
                 }
             ]
         },
         {
-            "name": "pages",
-            "displayName": "Pages",
+            "name": "systems",
+            "displayName": "Systems",
             "files": [
                 {
-                    "id": "pages-intro",
-                    "title": "System J: Operational Doctrine",
-                    "path": "pages/intro.md"
+                    "id": "systems-concurrency_guide",
+                    "title": "Concurrency and Parallelism",
+                    "path": "systems/concurrency_guide.md"
+                },
+                {
+                    "id": "systems-philosophy",
+                    "title": "Polymorphic Engines",
+                    "path": "systems/philosophy.md"
                 }
             ]
         }
@@ -31,13 +31,8 @@
     "rootFiles": [
         {
             "id": "index",
-            "title": "Welcome to System J",
+            "title": "Index",
             "path": "index.md"
-        },
-        {
-            "id": "resume",
-            "title": "Resume",
-            "path": "resume.md"
         }
     ]
 }

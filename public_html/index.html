@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYSTEM J // TERMINAL</title>
+    <title>Shivansh Jaiswal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Source+Code+Pro:wght@400;700&family=IBM+Plex+Mono:wght@400;700&family=Space+Mono:wght@400;700&family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=VT323&family=Press+Start+2P&family=Inter:wght@400;500;600&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
@@ -69,21 +72,19 @@
             <div class="theme-section">
                 <div class="theme-section-title">FONT</div>
                 <div class="theme-font-grid">
-                    <button class="font-btn active" data-font="'Fira Code', monospace">Fira Code</button>
-                    <button class="font-btn" data-font="'JetBrains Mono', monospace">JetBrains</button>
-                    <button class="font-btn" data-font="'Source Code Pro', monospace">Source Code</button>
-                    <button class="font-btn" data-font="'IBM Plex Mono', monospace">IBM Plex</button>
-                    <button class="font-btn" data-font="'Space Mono', monospace">Space Mono</button>
-                    <button class="font-btn" data-font="'VT323', monospace">VT323</button>
-                    <button class="font-btn" data-font="'Press Start 2P', monospace">Pixel</button>
+                    <button class="font-btn active" data-font="vt323">VT323</button>
+                    <button class="font-btn" data-font="space-mono">Space Mono</button>
+                    <button class="font-btn" data-font="pixel">Pixel</button>
+                    <button class="font-btn" data-font="inter">Inter</button>
+                    <button class="font-btn" data-font="merriweather">Merriweather</button>
                 </div>
             </div>
 
             <div class="theme-section">
                 <div class="theme-section-title">FONT SIZE</div>
                 <div class="theme-slider-row">
-                    <input type="range" id="font-size-slider" min="12" max="20" value="14">
-                    <span id="font-size-value">14px</span>
+                    <input type="range" id="font-size-slider" min="12" max="24" value="16">
+                    <span id="font-size-value">16px</span>
                 </div>
             </div>
         </div>
@@ -118,8 +119,6 @@
             <span id="clock"></span>
         </div>
 
-        <!-- Watermark logo in bottom-right corner -->
-        <div id="logo-watermark" class="interface-element"></div>
     </div>
 
     <script src="js/parser.js"></script>

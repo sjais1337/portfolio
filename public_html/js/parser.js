@@ -165,11 +165,17 @@ const Parser = {
         html = html.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
         html = html.replace(/(?<![a-zA-Z0-9])_([^_]+)_(?![a-zA-Z0-9])/g, '<em>$1</em>');
 
-        // LaTeX Math (basic support - styled display, no actual rendering)
-        // Block math $$...$$
-        html = html.replace(/\$\$([^$]+)\$\$/g, '<div class="math-block">$1</div>');
-        // Inline math $...$
-        html = html.replace(/\$([^$\n]+)\$/g, '<span class="math-inline">$1</span>');
+        // LaTeX Math - protect and mark for KaTeX rendering
+        // Block math $$...$$ (can span multiple lines)
+        html = html.replace(/\$\$([\s\S]+?)\$\$/g, function(match, tex) {
+            const escaped = self._escapeHtml(tex.trim());
+            return `<div class="math-block" data-tex="${escaped}"></div>`;
+        });
+        // Inline math $...$ (single line only)
+        html = html.replace(/\$([^$\n]+)\$/g, function(match, tex) {
+            const escaped = self._escapeHtml(tex.trim());
+            return `<span class="math-inline" data-tex="${escaped}"></span>`;
+        });
 
         // ============================================
         // PHASE 5: PARAGRAPHS
@@ -211,5 +217,57 @@ const Parser = {
     addRule(id, regex, handler) {
         this._customRules = this._customRules || [];
         this._customRules.push({ id, regex, handler });
+    },
+
+    /**
+     * Render all math elements in a container using KaTeX.
+     * Call this after inserting parsed HTML into the DOM.
+     * @param {HTMLElement} container - The container element to search for math
+     */
+    renderMath(container) {
+        if (typeof katex === 'undefined') {
+            console.warn('KaTeX not loaded, math will not render');
+            return;
+        }
+
+        // Render block math
+        container.querySelectorAll('.math-block[data-tex]').forEach(el => {
+            try {
+                const tex = el.getAttribute('data-tex')
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&amp;/g, '&')
+                    .replace(/&quot;/g, '"');
+                katex.render(tex, el, {
+                    displayMode: true,
+                    throwOnError: false,
+                    strict: false
+                });
+            } catch (e) {
+                el.textContent = el.getAttribute('data-tex');
+                el.classList.add('math-error');
+                console.error('KaTeX error:', e);
+            }
+        });
+
+        // Render inline math
+        container.querySelectorAll('.math-inline[data-tex]').forEach(el => {
+            try {
+                const tex = el.getAttribute('data-tex')
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&amp;/g, '&')
+                    .replace(/&quot;/g, '"');
+                katex.render(tex, el, {
+                    displayMode: false,
+                    throwOnError: false,
+                    strict: false
+                });
+            } catch (e) {
+                el.textContent = el.getAttribute('data-tex');
+                el.classList.add('math-error');
+                console.error('KaTeX error:', e);
+            }
+        });
     }
 };

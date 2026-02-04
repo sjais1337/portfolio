@@ -1,6 +1,6 @@
 # Concurrency and Parallelism
 
-The main resource we are following is **C++ Concurrency in Action** (Referred as CCIA) by Anthony Williams. It is expected, that after going through this guide in its entirety you will be able to look at new design patterns and concepts in concurrency and understand the "Why?"s of what is happening with a lot less friction. You'll learn the core knowledge required to design and build concurrent applications.
+The main resource we are following is **M Bala Kumaraam** **C++ Concurrency in Action** (Referred as CCIA) by Anthony Williams. It is expected, that after going through this guide in its entirety you will be able to look at new design patterns and concepts in concurrency and understand the "Why?"s of what is happening with a lot less friction. You'll learn the core knowledge required to design and build concurrent applications.
 
 IMPORTANT: If you think you are really stuck at a certain point, and not able to understand something, you are free to contact the person who wrote this guide!
 
@@ -389,8 +389,4 @@ The way you program a GPU is significantly different from how you program a CPU.
 5. Result Transfer: Once the kernel is finished the result is copied back from the VRAM to system RAM. 
 
 The dominant frameworks as of now for GPGPU are NVIDIA's CUDA and OpenCL. If you want to get into this stuff, then official [CUDA C++ Programming Guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html) is the best resource out there.
-
-**Contributors**
-
-Shivansh Jaiswal | +91 9971104638
 ---

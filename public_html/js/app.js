@@ -13,7 +13,6 @@ const App = {
         interfaceElements: document.querySelectorAll('.interface-element'),
         statusText: document.getElementById('status-text'),
         clock: document.getElementById('clock'),
-        logoWatermark: document.getElementById('logo-watermark'),
         // New elements
         breadcrumb: document.getElementById('breadcrumb'),
         systemStats: document.getElementById('system-stats'),
@@ -182,9 +181,6 @@ const App = {
         this.elements.interfaceElements.forEach(el => el.classList.add('interface-active'));
         this.elements.statusText.textContent = "STATUS: ONLINE | MODE: VIEW";
         
-        // Render the logo watermark in the bottom-right corner
-        this.renderLogoWatermark();
-        
         this.state.booted = true;
         
         // Check if URL has a hash to load specific content (for shared links)
@@ -199,14 +195,6 @@ const App = {
     /**
      * Renders the ASCII logo as a small watermark in the bottom-right corner.
      */
-    renderLogoWatermark() {
-        if (!this.elements.logoWatermark) return;
-        
-        const pre = document.createElement('pre');
-        pre.textContent = this.config.ansiLogo.join('\n');
-        this.elements.logoWatermark.appendChild(pre);
-    },
-
     startClock() {
         setInterval(() => {
             const now = new Date();
@@ -321,6 +309,10 @@ const App = {
 
             const html = Parser.parse(text);
             this.elements.blogContent.innerHTML = `<article>${html}</article>`;
+            
+            // Render math equations with KaTeX
+            Parser.renderMath(this.elements.blogContent);
+            
             this.elements.statusText.textContent = "STATUS: ONLINE | MODE: VIEW";
             
             // Update the URL hash so the link is shareable

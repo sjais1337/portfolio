@@ -50,6 +50,36 @@ const ThemeManager = {
         }
     },
 
+    // Font definitions with display names, CSS values, and size multipliers
+    // Multiplier compensates for visual size differences between fonts
+    fonts: {
+        'vt323': {
+            name: 'VT323',
+            family: "'VT323', monospace",
+            multiplier: 1.25  // VT323 renders small, needs boost
+        },
+        'space-mono': {
+            name: 'Space Mono',
+            family: "'Space Mono', monospace",
+            multiplier: 1.0
+        },
+        'pixel': {
+            name: 'Pixel',
+            family: "'Press Start 2P', monospace",
+            multiplier: 0.7  // Pixel font is large, needs reduction
+        },
+        'inter': {
+            name: 'Inter',
+            family: "'Inter', sans-serif",
+            multiplier: 1.0
+        },
+        'merriweather': {
+            name: 'Merriweather',
+            family: "'Merriweather', serif",
+            multiplier: 0.95
+        }
+    },
+
     // Current state
     state: {
         currentPreset: 'matrix',
@@ -60,8 +90,8 @@ const ThemeManager = {
         },
         crtEnabled: true,
         flickerEnabled: true,
-        fontSize: 14,
-        fontFamily: "'Fira Code', monospace"
+        fontSize: 16,
+        fontId: 'vt323'
     },
 
     // DOM elements (populated on init)
@@ -245,8 +275,10 @@ const ThemeManager = {
         // Apply font size
         root.style.setProperty('--font-size-base', `${this.state.fontSize}px`);
         
-        // Apply font family
-        root.style.setProperty('--font-family', this.state.fontFamily);
+        // Apply font family and multiplier
+        const fontDef = this.fonts[this.state.fontId] || this.fonts['vt323'];
+        root.style.setProperty('--font-family', fontDef.family);
+        root.style.setProperty('--font-size-multiplier', fontDef.multiplier);
     },
 
     /**
@@ -260,11 +292,18 @@ const ThemeManager = {
     },
 
     /**
-     * Set font family
+     * Set font by ID (applies font family and size multiplier)
      */
-    setFont(fontFamily) {
-        this.state.fontFamily = fontFamily;
-        document.documentElement.style.setProperty('--font-family', fontFamily);
+    setFont(fontId) {
+        const fontDef = this.fonts[fontId];
+        if (!fontDef) {
+            console.warn('Unknown font:', fontId);
+            return;
+        }
+        
+        this.state.fontId = fontId;
+        document.documentElement.style.setProperty('--font-family', fontDef.family);
+        document.documentElement.style.setProperty('--font-size-multiplier', fontDef.multiplier);
         this.updateUI();
         this.saveToStorage();
     },
@@ -300,7 +339,7 @@ const ThemeManager = {
 
         // Update font buttons
         this.elements.fontBtns.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.font === this.state.fontFamily);
+            btn.classList.toggle('active', btn.dataset.font === this.state.fontId);
         });
 
         // Update color inputs
@@ -334,7 +373,7 @@ const ThemeManager = {
             crt: this.state.crtEnabled,
             flicker: this.state.flickerEnabled,
             fontSize: this.state.fontSize,
-            fontFamily: this.state.fontFamily
+            fontId: this.state.fontId
         };
         localStorage.setItem('systemj-theme', JSON.stringify(data));
     },
@@ -350,8 +389,13 @@ const ThemeManager = {
                 this.state.customColors = data.colors || this.presets.matrix;
                 this.state.crtEnabled = data.crt !== false;
                 this.state.flickerEnabled = data.flicker !== false;
-                this.state.fontSize = data.fontSize || 14;
-                this.state.fontFamily = data.fontFamily || "'Fira Code', monospace";
+                this.state.fontSize = data.fontSize || 16;
+                // Handle legacy fontFamily or new fontId
+                if (data.fontId && this.fonts[data.fontId]) {
+                    this.state.fontId = data.fontId;
+                } else {
+                    this.state.fontId = 'vt323'; // Default
+                }
             }
         } catch (e) {
             console.warn('Failed to load theme from storage:', e);
