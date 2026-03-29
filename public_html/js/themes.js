@@ -50,48 +50,10 @@ const ThemeManager = {
         }
     },
 
-    // Font definitions with display names, CSS values, and size multipliers
-    // Multiplier compensates for visual size differences between fonts
-    fonts: {
-        'vt323': {
-            name: 'VT323',
-            family: "'VT323', monospace",
-            multiplier: 1.25  // VT323 renders small, needs boost
-        },
-        'space-mono': {
-            name: 'Space Mono',
-            family: "'Space Mono', monospace",
-            multiplier: 1.0
-        },
-        'pixel': {
-            name: 'Pixel',
-            family: "'Press Start 2P', monospace",
-            multiplier: 0.7  // Pixel font is large, needs reduction
-        },
-        'inter': {
-            name: 'Inter',
-            family: "'Inter', sans-serif",
-            multiplier: 1.0
-        },
-        'merriweather': {
-            name: 'Merriweather',
-            family: "'Merriweather', serif",
-            multiplier: 0.95
-        }
-    },
-
     // Current state
     state: {
         currentPreset: 'matrix',
-        customColors: {
-            accent: '#00ee00',
-            bg: '#000000',
-            text: '#ffffff'
-        },
-        crtEnabled: true,
-        flickerEnabled: true,
-        fontSize: 16,
-        fontId: 'vt323'
+        fontSize: 16
     },
 
     // DOM elements (populated on init)
@@ -117,14 +79,6 @@ const ThemeManager = {
             toggle: document.getElementById('themes-toggle'),
             closeBtn: document.getElementById('theme-panel-close'),
             presetBtns: document.querySelectorAll('.theme-preset-btn'),
-            fontBtns: document.querySelectorAll('.font-btn'),
-            colorAccent: document.getElementById('color-accent'),
-            colorBg: document.getElementById('color-bg'),
-            colorText: document.getElementById('color-text'),
-            toggleCrt: document.getElementById('toggle-crt'),
-            toggleFlicker: document.getElementById('toggle-flicker'),
-            crtOverlay: document.getElementById('crt-overlay'),
-            crtFlicker: document.getElementById('crt-flicker'),
             fontSizeSlider: document.getElementById('font-size-slider'),
             fontSizeValue: document.getElementById('font-size-value')
         };
@@ -164,33 +118,6 @@ const ThemeManager = {
             });
         });
 
-        // Font buttons
-        this.elements.fontBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const font = btn.dataset.font;
-                this.setFont(font);
-            });
-        });
-
-        // Custom color inputs
-        this.elements.colorAccent.addEventListener('input', (e) => {
-            this.setCustomColor('accent', e.target.value);
-        });
-        this.elements.colorBg.addEventListener('input', (e) => {
-            this.setCustomColor('bg', e.target.value);
-        });
-        this.elements.colorText.addEventListener('input', (e) => {
-            this.setCustomColor('text', e.target.value);
-        });
-
-        // Effect toggles
-        this.elements.toggleCrt.addEventListener('click', () => {
-            this.toggleCrt();
-        });
-        this.elements.toggleFlicker.addEventListener('click', () => {
-            this.toggleFlicker();
-        });
-
         // Font size slider
         if (this.elements.fontSizeSlider) {
             this.elements.fontSizeSlider.addEventListener('input', (e) => {
@@ -221,23 +148,7 @@ const ThemeManager = {
         if (!preset) return;
 
         this.state.currentPreset = presetName;
-        this.state.customColors = {
-            accent: preset.accent,
-            bg: preset.bg,
-            text: preset.text
-        };
 
-        this.applyCurrentTheme();
-        this.updateUI();
-        this.saveToStorage();
-    },
-
-    /**
-     * Set a custom color (clears preset selection)
-     */
-    setCustomColor(type, color) {
-        this.state.currentPreset = null; // Clear preset when customizing
-        this.state.customColors[type] = color;
         this.applyCurrentTheme();
         this.updateUI();
         this.saveToStorage();
@@ -248,37 +159,24 @@ const ThemeManager = {
      */
     applyCurrentTheme() {
         const root = document.documentElement;
-        const colors = this.state.customColors;
+        
+        // Fallback to matrix if preset not found
+        const preset = this.presets[this.state.currentPreset] || this.presets['matrix'];
 
-        root.style.setProperty('--accent-color', colors.accent);
-        root.style.setProperty('--bg-color', colors.bg);
-        root.style.setProperty('--text-color', colors.text);
+        root.style.setProperty('--accent-color', preset.accent);
+        root.style.setProperty('--bg-color', preset.bg);
+        root.style.setProperty('--text-color', preset.text);
 
         // Calculate lighter background for code blocks, etc.
-        const bgLight = this.lightenColor(colors.bg, 15);
+        const bgLight = this.lightenColor(preset.bg, 15);
         root.style.setProperty('--bg-color-light', bgLight);
 
         // Calculate dim color (60% opacity of text)
-        const dimColor = this.hexToRgba(colors.text, 0.6);
+        const dimColor = this.hexToRgba(preset.text, 0.6);
         root.style.setProperty('--text-dim', dimColor);
-
-        // Update CRT scanline color based on accent
-        const scanlineColor = this.hexToRgba(colors.accent, 0.15);
-        root.style.setProperty('--crt-scanline', scanlineColor);
-
-        // Update flicker overlay color
-        if (this.elements.crtFlicker) {
-            const flickerColor = this.hexToRgba(colors.accent, 0.03);
-            this.elements.crtFlicker.style.background = flickerColor;
-        }
         
         // Apply font size
         root.style.setProperty('--font-size-base', `${this.state.fontSize}px`);
-        
-        // Apply font family and multiplier
-        const fontDef = this.fonts[this.state.fontId] || this.fonts['vt323'];
-        root.style.setProperty('--font-family', fontDef.family);
-        root.style.setProperty('--font-size-multiplier', fontDef.multiplier);
     },
 
     /**
@@ -292,43 +190,6 @@ const ThemeManager = {
     },
 
     /**
-     * Set font by ID (applies font family and size multiplier)
-     */
-    setFont(fontId) {
-        const fontDef = this.fonts[fontId];
-        if (!fontDef) {
-            console.warn('Unknown font:', fontId);
-            return;
-        }
-        
-        this.state.fontId = fontId;
-        document.documentElement.style.setProperty('--font-family', fontDef.family);
-        document.documentElement.style.setProperty('--font-size-multiplier', fontDef.multiplier);
-        this.updateUI();
-        this.saveToStorage();
-    },
-
-    /**
-     * Toggle CRT scanlines
-     */
-    toggleCrt() {
-        this.state.crtEnabled = !this.state.crtEnabled;
-        this.elements.crtOverlay.style.display = this.state.crtEnabled ? 'block' : 'none';
-        this.updateUI();
-        this.saveToStorage();
-    },
-
-    /**
-     * Toggle CRT flicker effect
-     */
-    toggleFlicker() {
-        this.state.flickerEnabled = !this.state.flickerEnabled;
-        this.elements.crtFlicker.style.display = this.state.flickerEnabled ? 'block' : 'none';
-        this.updateUI();
-        this.saveToStorage();
-    },
-
-    /**
      * Update UI to reflect current state
      */
     updateUI() {
@@ -336,23 +197,6 @@ const ThemeManager = {
         this.elements.presetBtns.forEach(btn => {
             btn.classList.toggle('active', btn.dataset.theme === this.state.currentPreset);
         });
-
-        // Update font buttons
-        this.elements.fontBtns.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.font === this.state.fontId);
-        });
-
-        // Update color inputs
-        this.elements.colorAccent.value = this.state.customColors.accent;
-        this.elements.colorBg.value = this.state.customColors.bg;
-        this.elements.colorText.value = this.state.customColors.text;
-
-        // Update toggle buttons
-        this.elements.toggleCrt.textContent = this.state.crtEnabled ? 'ON' : 'OFF';
-        this.elements.toggleCrt.classList.toggle('active', this.state.crtEnabled);
-        
-        this.elements.toggleFlicker.textContent = this.state.flickerEnabled ? 'ON' : 'OFF';
-        this.elements.toggleFlicker.classList.toggle('active', this.state.flickerEnabled);
         
         // Update font size slider
         if (this.elements.fontSizeSlider) {
@@ -369,11 +213,7 @@ const ThemeManager = {
     saveToStorage() {
         const data = {
             preset: this.state.currentPreset,
-            colors: this.state.customColors,
-            crt: this.state.crtEnabled,
-            flicker: this.state.flickerEnabled,
-            fontSize: this.state.fontSize,
-            fontId: this.state.fontId
+            fontSize: this.state.fontSize
         };
         localStorage.setItem('systemj-theme', JSON.stringify(data));
     },
@@ -386,16 +226,7 @@ const ThemeManager = {
             const data = JSON.parse(localStorage.getItem('systemj-theme'));
             if (data) {
                 this.state.currentPreset = data.preset || 'matrix';
-                this.state.customColors = data.colors || this.presets.matrix;
-                this.state.crtEnabled = data.crt !== false;
-                this.state.flickerEnabled = data.flicker !== false;
                 this.state.fontSize = data.fontSize || 16;
-                // Handle legacy fontFamily or new fontId
-                if (data.fontId && this.fonts[data.fontId]) {
-                    this.state.fontId = data.fontId;
-                } else {
-                    this.state.fontId = 'vt323'; // Default
-                }
             }
         } catch (e) {
             console.warn('Failed to load theme from storage:', e);

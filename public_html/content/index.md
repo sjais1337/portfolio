@@ -1,34 +1,14 @@
-# Welcome to System J
+# Index
 
-:::meta
-Node: J-TERM-01
-Status: OPERATIONAL
-:::
+![image](https://sjais.in/assets/uploads/logo.png)
 
-You have connected to **System J** — a terminal-based interface for navigating thoughts, projects, and documentation.
+This is the personal site of **Shivansh Jaiswal**, presently a sophomore in the department of Economic Sciences at IIT Kanpur. I like to learn and write about various domains, and at present have found my niche in systems level programming. I am experienced in developing web applications, and implementing machine learning models. As of recent, I've also taken to cryptology, thanks to a course (CS641) I'm taking this semester.
 
-The modern web obscures its machinery beneath layers of abstraction. We have traded raw information density for "user experience." This space is an explicit rejection of that paradigm.
+The intent of this site is to publish all my writings, whether academic, philosphical, expository or completely random. You can find me on [GitHub](https://github.com/sjais1337), [Linkedin](https://www.linkedin.com/in/sjais1337/) and [Instagram](https://www.instagram.com/sjais1337/). 
 
+This site is written (read, vibecoded) primarily in plain HTML, CSS, JS and uses PHP for functionality. It doesn't require opening any FTP/SSH connection to publish articles and manages directories entirely on its own. The articles are stored in `.md` files, and are rendered using a built-in `.md` file parser. The goal with using `.md` files with a parser was to achieve simplicity, since most my writings are written in that format only.
+
+Moreover, the usage of a custom parser allows for adding customizeable items as and when needed, providing upgraded flexibility and modularity.
+
+There are a lot of personalization options present in the site, which you are free to choose to enhance your reading experience. Click on the **"THEMES"** menu item in the top navbar to explore your options. You can find the source code of this site in [my repository](https://github.com/sjais1337/portfolio).
 ---
-**Index of Coincidence**: The probability that two characters selected at random from a text are the same. Let us say that the total number of characters is $N$ and $k$ different characters are available. Starting from an evenly distributed system with $p$ characters of each kind, we will have $p = N/k$ but like, suppose the characters with increased frequency are there and then there are characters with decreased frequency. Suppose increased frequency are $k_{i_1}, k_{i_2}, .., k_{i_l}$ and decreased frequency are $k_{j_1}, k_{j_2}, .., k_{j_m}$ where $m+l=k$. Then, the corresponding difference will look like, $$ \left(\sum_{r=1}^{m} \frac{(p+I_{i_r})^2}{N^2}\right) + \left(\sum_{r=1}^{l} \frac{(p-D_{i_r})^2}{N^2}\right) - k\frac{p^2}{N^2}$$ Now, expanding it $$\left(\sum_{r=1}^{m} \frac{I^2_{r_1}+2pI_{r_1}}{N^2}\right) + \left(\sum_{r=1}^{l} \frac{D^2_{r_1}-2pD_{r_1}}{N^2}\right)$$But, it’s known that $\sum_{r=1}^{m} I_{i_r} = \sum_{r=1}^{l} D_{i_r}$ since increase in frequency must be equal to decrease in frequency. Thus, overall we are just left with the squared terms which are always positive. Thus, it’s as the distribution becomes more uneven, and there’s more inequality then the value of index of coincidence increases. 
-## Navigation
-
-Use the **file browser** on the left to explore:
-
-- **Blog** — Technical writings and guides
-- **Pages** — System documentation and meta-content
-- **Root files** — Resume and other standalone documents
-
-All content is stored as plain Markdown. No JavaScript frameworks. No build tools. Just text.
-
----
-
-## Sharing
-
-Every page has a unique URL. Copy the address bar to share a direct link to any article.
-
----
-
-> "The machine does not isolate man from the great problems of nature but plunges him more deeply into them."  
-> — Antoine de Saint-Exupéry
-

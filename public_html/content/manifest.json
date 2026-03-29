@@ -1,29 +1,50 @@
 {
     "folders": [
         {
-            "name": "blog",
-            "displayName": "Blog",
+            "name": "cryptology",
+            "displayName": "Cryptology",
             "files": [
                 {
-                    "id": "blog-concurrency_guide",
-                    "title": "Concurrency and Parallelism",
-                    "path": "blog/concurrency_guide.md"
-                },
-                {
-                    "id": "blog-philosophy",
-                    "title": "Philosophy",
-                    "path": "blog/philosophy.md"
+                    "id": "cryptology-historical_ciphers",
+                    "title": "Historical Ciphers",
+                    "path": "cryptology/historical_ciphers.md"
                 }
             ]
         },
         {
-            "name": "pages",
-            "displayName": "Pages",
+            "name": "plus_twelve",
+            "displayName": "Plus Twelve",
             "files": [
                 {
-                    "id": "pages-intro",
-                    "title": "System J: Operational Doctrine",
-                    "path": "pages/intro.md"
+                    "id": "plus_twelve-index",
+                    "title": "What's this?",
+                    "path": "plus_twelve/index.md"
+                },
+                {
+                    "id": "plus_twelve-lagrangian",
+                    "title": "Lagrangian",
+                    "path": "plus_twelve/lagrangian.md"
+                },
+                {
+                    "id": "plus_twelve-on_probability",
+                    "title": "Probability",
+                    "path": "plus_twelve/on_probability.md"
+                }
+            ]
+        },
+        {
+            "name": "systems",
+            "displayName": "Systems",
+            "files": [
+                {
+                    "id": "systems-concurrency_guide",
+                    "title": "Concurrency and Parallelism",
+                    "path": "systems/concurrency_guide.md"
+                },
+                {
+                    "id": "systems-exploring_programs",
+                    "title": "Exploring Programs",
+                    "path": "systems/exploring_programs.md"
                 }
             ]
         }
@@ -31,13 +52,8 @@
     "rootFiles": [
         {
             "id": "index",
-            "title": "Welcome to System J",
+            "title": "Index",
             "path": "index.md"
-        },
-        {
-            "id": "resume",
-            "title": "Resume",
-            "path": "resume.md"
         }
     ]
 }

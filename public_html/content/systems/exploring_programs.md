@@ -1,12 +1,9 @@
-# Philosophy
+# Exploring Programs
 :::meta
-Node: J-TERM-01
 Date: 2025-11-21
 :::
-We believe in raw data. We believe in the command line. We believe in green text on black backgrounds.
 
-The medium is the message.
-In this blog, we will be starting from absolutely nothing, and end up writing the base code of some of the most notorious malware of the 90s. We will fuck ourselves learn about how your programs actually exist in memory, how they run, learn about assembly, and finally come to the topic of the blog, Polymorphic Engines. 
+In this blog, we will be starting from absolutely nothing, and end up writing the base code of some of the most notorious malware of the 90s. We will learn about how your programs actually exist in memory, how they run, learn about assembly, and finally come to the topic of the blog, Polymorphic Engines. 
 
 When talking about a **program**, we must be precise about what we mean by it. A program, in formal terms is a set of machine instructions, stored in a file format such as ELF in linux (Executable and Linkable Format) or PE in windows, that exists on the _disk_. The instructions present in such files are not C/C++ or Python code, rather, they are present as machine code. To convert your instructions in C/C++ to machine code, you must _compile_ your code into a program. In particular, the `gcc` or any compiler for that matter, will output a ELF/PE file. 
 
@@ -20,7 +17,7 @@ Let us have a quick look at the anatomy of a program. It typically contains the 
 
 The program only comes into action when we _load it_ into the CPU. The process of loading itself is fairly involved, and for now, irrelevant so we'll skip it. When this happens, a **process** is said to have been initiated. A process is distinct from a program, since by definition it is a _running program_. A process can be completely defined by it's **machine state**, which comprises the address space, registers such as program counter (PC) which instruct the process on which instruction to run next, the stack and frame pointers. For the time being, let us focus on the **address space**. The address space represents all the memory of the program, and is visualised in the following diagram.
 
-![image](https://hackmd.io/_uploads/HkzbrPTM-g.png)
+![image](https://sjais.in/assets/uploads/systems/virtual_memory_space.png)
 
 
 Although this diagram does a decent job of outlining the various parts of the address space, it's still not complete. Note that it starts from $0$KB (let's call it _low_) and ends at $16$KB (let's call it high). The program code starts at _low_, and is usually a *Read-only and Execute* (this will be important to us). After it comes the `.data` segment with the global variables with values, and `.bss` which has global variables without values. After it, the format is as given in the image, except for the kernel space (high memory) which is irrelevant to us as of now, and also mostly irrelevant on $64$-bit systems. Don't worry about `0x0000` to `0x0FFF` for now.
@@ -42,7 +39,7 @@ While we are at it, we might enquire about what distinctions exist between the k
 > Interestingly, most architectures allocate 4-8 registers for function arguments, the rest of the arguments go to the stack. The registers themselves are typically 64bit (on x64), and thus arguments which can't fit on registers also exist on the stack. `structs` have to be copied, but static arrays need not be! There's a lot to cover, I will probably end up  covering the entire length of the article in _side-notes_!
 
 A **stack frame** put simply is a block of memory on the _call stack_ or in context of single-threaded programs, just the _stack_, that contains local data and execution context for a single function call. The following diagram shows how the call stack actually looks like, and highlights the difference between individual frames. Let us try to understand this diagram carefully.
-![image](https://hackmd.io/_uploads/SJreeHhG-g.png)
+![image](https://sjais.in/assets/uploads/systems/stack_pointer_rbp.png)
 
 First, note that the call stack is _not_ the stack of instructions of a function. It is simply a block of memory which contains the context for evaluation of a function call. Let us explain the rest through the lifecycle. When the stack is initialized for a process, it is initially empty. The stack only starts filling up as function calls occur. There's always a main function which calls the other functions. The stack frames of functions are stacked on top of each other on the basis of _order of execution_. It's a chronological order which defines the stacking. The stack grows downwards, starting from higher memory addresses to lower memory addresses. 
 
@@ -249,7 +246,7 @@ Section Headers:
 
 About the MMU we talked about earlier, the smallest unit that the MMU operates on (and the only unit it operates on) is a _page_. It cannot directly manage sections of memory smaller than a **Page** (usually 4KB, but it can be larger or smaller too). Thus, to change the permission of a specific part of the memory, we must change it for the _entire_ page. 
 
-![image](https://hackmd.io/_uploads/SkC64daM-g.png)
+![image](https://sjais.in/assets/uploads/systems/program_permissions.png)
 
 
 Let us for now focus on the Flags column. The `.data` section is WA, i.e. Write/Allocate, whereas `.text` section is AX, i.e. Allocate/Execute, no writing allowed! Here's an updated version of a diagram we saw earlier. Memory can be writeable OR executable but usually not both. This is the specific rule we break to write Polymorphic Engines. Note that the code we write now, _WON'T_ work on Windows using MinGW but there are workarounds to it, and to wrtite the parallel code for Windows, you should look up the relevant APIs. 
@@ -384,8 +381,4 @@ BUT BUT BUT before you run it, shouldn't you check whether I'm just bluffing and
 ### Buffer Overflows
 > https://www.youtube.com/watch?v=C630ttQlyhI
 > https://blogs.oracle.com/linux/unwinding-stack-frame-pointers-and-orc
-
-
-
-Author: Shivansh Jaiswal (+91 9971104638)
 ---

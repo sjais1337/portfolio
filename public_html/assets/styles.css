@@ -4,10 +4,9 @@
     --text-color: #ffffff;
     --accent-color: #00ee00; 
     --text-dim: #888888;
-    --crt-scanline: rgba(0, 238, 0, 0.2);
     --font-size-base: 16px;
-    --font-size-multiplier: 1.25;
-    --font-family: 'VT323', monospace;
+    --font-family: 'Faculty Glyphic', sans-serif;
+    --font-family-hud: 'JetBrains Mono', monospace;
 }
 
 /* --- GLOBAL --- */
@@ -19,25 +18,14 @@ body, html {
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: var(--font-family);
-    font-size: calc(var(--font-size-base) * var(--font-size-multiplier));
-    line-height: 1.4;
+    font-size: var(--font-size-base);
+    line-height: 1.6;
     overflow: hidden;
 }
 
-/* --- CRT SIMULATION --- */
-#crt-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(var(--crt-scanline) 50%, transparent 50%);
-    background-size: 100% 4px;
-    pointer-events: none; z-index: 9999;
+.interface-element, .theme-panel, #boot-terminal, .ascii-box {
+    font-family: var(--font-family-hud);
 }
-#crt-flicker {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 9998;
-    background: rgba(0, 238, 0, 0.03);
-    animation: flicker 0.15s infinite;
-}
-@keyframes flicker { 0% { opacity: 0.1; } 50% { opacity: 0; } 100% { opacity: 0.1; } }
 
 /* --- MAIN TUI STRUCTURE --- */
 #tui-container {
@@ -127,7 +115,7 @@ body, html {
     border: 1px solid var(--accent-color);
     color: var(--accent-color);
     padding: 6px 10px;
-    font-family: 'Fira Code', monospace;
+    font-family: var(--font-family-hud);
     font-size: calc(var(--font-size-base) - 2px);
     cursor: pointer;
     text-transform: uppercase;
@@ -138,66 +126,6 @@ body, html {
     color: var(--bg-color);
 }
 
-.theme-color-row, .theme-toggle-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    font-size: calc(var(--font-size-base) - 1px);
-    color: var(--text-dim);
-}
-.theme-color-row:last-child, .theme-toggle-row:last-child { margin-bottom: 0; }
-
-.theme-color-row input[type="color"] {
-    width: 50px;
-    height: 24px;
-    border: 1px solid var(--accent-color);
-    background: var(--bg-color);
-    cursor: pointer;
-    padding: 0;
-}
-.theme-color-row input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
-.theme-color-row input[type="color"]::-webkit-color-swatch { border: none; }
-
-.toggle-btn {
-    background: var(--bg-color);
-    border: 1px solid var(--accent-color);
-    color: var(--text-dim);
-    padding: 4px 12px;
-    font-family: 'Fira Code', monospace;
-    font-size: calc(var(--font-size-base) - 2px);
-    cursor: pointer;
-    min-width: 50px;
-}
-.toggle-btn.active {
-    background: var(--accent-color);
-    color: var(--bg-color);
-}
-
-.theme-font-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
-}
-.font-btn {
-    background: var(--bg-color);
-    border: 1px solid var(--accent-color);
-    color: var(--text-dim);
-    padding: 6px 8px;
-    font-size: calc(var(--font-size-base) - 3px);
-    cursor: pointer;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.font-btn:hover {
-    background: var(--bg-color-light);
-}
-.font-btn.active {
-    background: var(--accent-color);
-    color: var(--bg-color);
-}
 
 .theme-slider-row {
     display: flex;
@@ -379,7 +307,7 @@ body, html {
     width: fit-content;
     max-width: 95%;
 }
-.boot-line { margin-bottom: 4px; white-space: pre; font-family: 'Fira Code', monospace; }
+.boot-line { margin-bottom: 4px; white-space: pre; font-family: var(--font-family-hud); }
 .boot-highlight { color: var(--accent-color); font-weight: bold; }
 .blinking-cursor {
     display: inline-block; width: 8px; height: 14px; background: var(--accent-color);
@@ -389,7 +317,7 @@ body, html {
 
 /* THE ANSI BLOCK LOGO STYLES */
 .logo-line {
-    font-family: 'Fira Code', monospace;
+    font-family: var(--font-family-hud);
     white-space: pre;
     color: var(--accent-color);
     font-size: 10px; 
@@ -399,7 +327,7 @@ body, html {
 }
 
 /* --- BLOG POST STYLES --- */
-#blog-content { display: none; } /* No Animation */
+#blog-content { display: none; /* No Animation */ }
 
 h1.post-title { font-size: 1.8rem; text-transform: uppercase; margin: 0 0 1rem 0; color: var(--accent-color); }
 h2 { font-size: 1.4rem; color: var(--accent-color); margin: 2rem 0 1rem 0; border-bottom: 1px dashed var(--accent-color); padding-bottom: 0.5rem; }
@@ -449,7 +377,7 @@ article em { color: var(--text-color); font-style: italic; }
     text-transform: uppercase;
 }
 .code-block code {
-    font-family: 'Fira Code', monospace;
+    font-family: var(--font-family-hud);
     font-size: 0.9rem;
     line-height: 1.5;
     color: var(--text-color);
@@ -465,7 +393,7 @@ article em { color: var(--text-color); font-style: italic; }
     background: var(--bg-color-light);
     border: 1px solid var(--text-dim);
     padding: 2px 6px;
-    font-family: 'Fira Code', monospace;
+    font-family: var(--font-family-hud);
     font-size: 0.9em;
     color: var(--accent-color);
     border-radius: 2px;
@@ -559,7 +487,7 @@ ul.styled-list li::before {
 .math-block .katex,
 .math-inline .katex {
     color: var(--accent-color);
-    font-family: 'VT323', monospace !important;
+    font-family: var(--font-family-hud) !important;
 }
 .math-block .katex {
     font-size: 1.4em;
@@ -578,7 +506,7 @@ ul.styled-list li::before {
 .katex .mathcal,
 .katex .mathfrak,
 .katex .mathscr {
-    font-family: 'VT323', monospace !important;
+    font-family: var(--font-family-hud) !important;
 }
 /* Make math slightly pixelated/crisp */
 .math-block .katex,
